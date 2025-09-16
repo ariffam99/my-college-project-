@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Weather Alert</title>
+    <meta name="description"
+        content="Responsive weather alert system for rural farmers. Search location, view current weather, alerts, resources, and signin." />
+    <link rel="stylesheet" href="style.css">
+
+</head>
+
+<body>
+    <div class="background-media" aria-hidden="true">
+        <!-- Replace the src below with a video of fields/rain etc. For demo we include a royalty-free sample link. If you prefer an image, replace with <img> -->
+        <video class="bg-video" autoplay muted loop playsinline>
+            <source
+                src="https://cdn.coverr.co/videos/coverr-farmland-1685539287687?token=eyJhbGciOiJIUzI1NiJ9.eyJpZCI6IjE2ODU1MzkyODc2Njg3IiwicmVmIjoicmVjb3JkIiwiaWF0IjoxNjg1NTM5ODA3fQ.3p0zvWwZ0pQfM9vdomkG3sZ0Y7jH9k6yqj8qjQ-GhBM"
+                type="video/mp4">
+            <!-- fallback image -->
+            <img src="https://images.unsplash.com/photo-1501785888041-af3ef285b470?w=1600&q=80&auto=format&fit=crop"
+                alt="fields background" />
+        </video>
+        <div class="clouds"
+            style="background-image: url('https://images.unsplash.com/photo-1504639725590-34d0984388bd?w=2400&q=80&auto=format&fit=crop');">
+        </div>
+    </div>
+
+    <div id="app" class="wrap">
+        <header>
+            <div class="brand">
+                <div class="logo">KA</div>
+                <div>
+                    <h1>Krishi Alert</h1>
+                    <div class="small muted">Weather alerts & guidance for rural farmers</div>
+                </div>
+            </div>
+
+            <nav>
+                <button class="nav-btn" data-route="home">Home</button>
+                <button class="nav-btn" data-route="alerts">Alerts</button>
+                <button class="nav-btn" data-route="resources">Resources</button>
+                <button class="nav-btn" id="signinBtn">Sign In</button>
+            </nav>
+        </header>
+
+        <main>
+            <!-- SPA pages rendered by JS -->
+            <div id="page-home" class="glass" style="display:block">
+                <div class="main-grid">
+                    <section>
+                        <div class="search-row">
+                            <input id="searchInput" class="search-input"
+                                placeholder="Enter village / town or use GPS to detect location"
+                                aria-label="Search location" />
+                            <button id="searchBtn" class="search-btn">Search</button>
+                            <button id="gpsBtn" class="search-btn" title="Use my location">Use GPS</button>
+                        </div>
+
+                        <div style="margin-top:12px;display:flex;gap:10px;align-items:center">
+                            <div class="unit-toggle">
+                                <div class="chip active" data-unit="metric">°C</div>
+                                <div class="chip" data-unit="imperial">°F</div>
+                            </div>
+                            <div class="muted small">• Alerts will appear below if severe weather is predicted</div>
+                        </div>
+
+                        <div style="margin-top:14px" class="current glass">
+                            <div class="top-row">
+                                <div>
+                                    <div id="locName" class="muted">--</div>
+                                    <div class="temp" id="tempVal">--</div>
+                                    <div class="meta" id="weatherDesc">--</div>
+                                </div>
+                                <div style="text-align:right">
+                                    <div class="storm" aria-hidden="true">
+                                        <div class="bolt"></div>
+                                    </div>
+                                    <div class="small muted" id="updatedAt">Updated: --</div>
+                                </div>
+                            </div>
+
+                            <div style="display:flex;gap:12px;margin-top:8px;flex-wrap:wrap">
+                                <div class="card-small glass" style="min-width:170px">Humidity: <strong
+                                        id="humidity">--</strong></div>
+                                <div class="card-small glass">Wind: <strong id="wind">--</strong></div>
+                                <div class="card-small glass">Feels like: <strong id="feels">--</strong></div>
+                                <div class="card-small glass">Precip chance: <strong id="precip">--</strong></div>
+                            </div>
+
+                        </div>
+
+                        <div style="margin-top:12px">
+                            <h3 class="small">Forecast (short)</h3>
+                            <div id="forecastList" style="display:flex;gap:8px;overflow:auto;padding-bottom:6px"></div>
+                        </div>
+
+                        <div style="margin-top:12px">
+                            <h3 class="small">Community photo</h3>
+                            <div class="hero-visual" id="heroImage"
+                                style="background-image: url('https://images.unsplash.com/photo-1509395176047-4a66953fd231?w=1200&q=80&auto=format&fit=crop');">
+                            </div>
+                        </div>
+
+                    </section>
+
+                    <aside class="side">
+                        <div class="glass card-small">
+                            <h4 class="small">Active Alerts</h4>
+                            <div id="alertsBox" class="alerts-list small">
+                                <div class="muted">No alerts — search a location to see alerts</div>
+                            </div>
+                        </div>
+
+                        <div class="glass card-small">
+                            <h4 class="small">Quick Actions</h4>
+                            <button class="nav-btn" id="prepGuide">Preparation Guide</button>
+                            <button class="nav-btn" id="sosBtn">Send SOS to Group</button>
+                            <div class="small muted" style="margin-top:8px">Share location & request help to farmer
+                                group (demo)</div>
+                        </div>
+
+                        <div class="glass card-small">
+                            <h4 class="small">Weather Tips</h4>
+                            <ul class="small muted" style="margin-top:8px">
+                                <li>Save seeds & tools above flood level.</li>
+                                <li>Harvest early-maturing crops if heavy rain predicted.</li>
+                                <li>Secure livestock & store feed safely.</li>
+                            </ul>
+                        </div>
+
+                    </aside>
+                </div>
+            </div>
+
+            <div id="page-alerts" class="glass" style="display:none;padding:16px">
+                <h2 class="small">Alerts Center</h2>
+                <div class="small muted" style="margin-bottom:8px">Consolidated weather warnings for your saved regions.
+                </div>
+                <div id="alertsCenter" class="alerts-list"></div>
+            </div>
+
+            <div id="page-resources" class="glass" style="display:none;padding:16px">
+                <h2 class="small">Resources</h2>
+                <div class="small muted">Documents and short guides for smallholder farmers.</div>
+                <ul style="margin-top:10px" class="small">
+                    <li>Flood preparedness checklist (PDF)</li>
+                    <li>Drought-resistant crop list</li>
+                    <li>How to store harvested grains safely</li>
+                </ul>
+            </div>
+
+            <div id="page-login" class="glass" style="display:none;padding:16px;max-width:480px;margin-top:16px">
+                <h2 class="small">Sign In / Register</h2>
+                <div style="margin-top:10px;display:flex;flex-direction:column;gap:8px">
+                    <input id="loginPhone" placeholder="Phone number (for OTP)" class="search-input" />
+                    <button id="loginSend" class="search-btn">Send OTP</button>
+                    <div class="small muted">Demo mode: clicking will simulate sign-in.</div>
+                </div>
+            </div>
+
+        </main>
+
+
+    </div>
+
+    <!-- Modal for Sign-in (simulated) -->
+    <div id="modal" class="modal-backdrop" role="dialog" aria-modal="true">
+        <div class="modal glass" style="padding:18px">
+            <h3 class="small">Sign In</h3>
+            <p class="small muted">Enter phone to receive OTP</p>
+            <input id="modalPhone" class="search-input" placeholder="Mobile number" />
+            <div style="display:flex;gap:8px;margin-top:10px;justify-content:flex-end">
+                <button id="closeModal" class="nav-btn">Cancel</button>
+                <button id="confirmModal" class="search-btn">Send OTP</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- footer section starts from here -->
+
+    <footer class="footer">
+        <div class="footer-container">
+
+            <!-- About Section -->
+            <div class="footer-section">
+                <h3>🌾 About KrishiAlert</h3>
+                <p>
+                    KrishiAlert is a farmer-focused weather alert platform that delivers
+                    real-time forecasts, storm alerts, and safety resources to rural communities.
+                </p>
+            </div>
+
+            <!-- Quick Links -->
+            <div class="footer-section">
+                <h3>🔗 Quick Links</h3>
+                <ul>
+                    <li><a href="#">Home</a></li>
+                    <li><a href="#">Weather Alerts</a></li>
+                    <li><a href="#">Resources</a></li>
+                    <li><a href="#">Contact</a></li>
+                    <li><a href="#">Login / SignUp</a></li>
+                </ul>
+            </div>
+
+            <!-- Contact Section -->
+            <div class="footer-section">
+                <h3>📞 Contact Us</h3>
+                <p><a href="mailto:mdarif912848@gmail.com">Email:mdarif912848@gmail.com </a></p>
+                <p><a href="tel:9128485633">Helpline: +91- xxxx-xxxx-xx </a></p>
+                <p>Address: Gopalpur, Siwan, Bihar</p>
+            </div>
+
+            <!-- Newsletter -->
+            <div class="footer-section">
+                <h3>📩 Newsletter</h3>
+                <p>Get daily weather alerts on your email.</p>
+                <form class="newsletter-form">
+                    <input type="email" placeholder="Enter your email" required />
+                    <button type="submit">Subscribe</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Social Media + Bottom -->
+        <div class="footer-bottom">
+            <div class="social-icons">
+                <a href="#"><img src="facebook.png" alt="facebook" /></a>
+                <a href="#"><img src="twitter.jpg" alt="twitter" /></a>
+                <a href="#"><img src="yt.jpg" alt="youtube" /></a>
+                <a href="#"><img src="whatsapp.jpg" alt="whatsapp" /></a>
+            </div>
+            <p>© 2025 Weather Alert | Designed with "Md. Arif"❤️ for Farmers</p>
+            <small>⚠ Weather data is approximate. Please verify with local agencies.</small>
+        </div>
+
+
+<!-- new section , advise for farmers  -->
+ <section class="advisory-section">
+  <h2>🌾 Farmer Advisory</h2>
+  <p id="weather-status">Loading weather...</p>
+  <div id="advisory-box">
+    <p>Advice will appear here based on weather condition.</p>
+  </div>
+</section>
+
+
+    </footer>
+
+</body>
+
+</html>
